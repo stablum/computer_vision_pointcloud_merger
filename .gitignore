@@ -19,3 +19,7 @@
 *.exe
 *.out
 *.app
+multi_threading_unix
+
+# vim stuff
+*~
