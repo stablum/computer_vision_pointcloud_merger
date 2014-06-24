@@ -36,7 +36,7 @@ void *kinect_reader(void *threadid)
    cout << "Thread for kinect reader n. " << tid << " started" << endl;
    while(true) {
    	   count++;
-   	   int waiting_time = 1 + rand() % 10; // max 10 seconds
+   	   int waiting_time = 1 + rand() % 4; // max 4 seconds
 	   cout << "Thread n. " << tid << " will wait for " << waiting_time << " seconds (before getting the frame)" << endl;
 	   sleep(waiting_time);
 	   
@@ -85,7 +85,7 @@ int main(int argc, const char *argv[])
     int i;
     for (i = 0; i < NUM_KINECTS; i++) {
     	pthread_mutex_init(&(access_frame_mutexes[i]), NULL);
-    	curr_frames[i].processed = false;
+    	curr_frames[i].processed = true;
     	curr_frames[i].frame_data = -2;
         cout << "main() : creating thread, " << i << endl;
         rc = pthread_create(&threads[i], NULL, kinect_reader, (void *) i);
