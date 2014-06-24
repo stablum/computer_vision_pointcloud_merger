@@ -41,7 +41,7 @@ int process_frame(int kinectid, int frame_data) {
 }
 
 int get_frame(int kinectid) {
-	cout << "processing frame " << kinectid << endl;
+	cout << "get frame " << kinectid << endl;
 	curr_frames[kinectid].processed = true; // will skip (and not process) this frame next time
 	int ret = curr_frames[kinectid].frame_data;
 	curr_frames[kinectid].frame_data = 0; // empty it
