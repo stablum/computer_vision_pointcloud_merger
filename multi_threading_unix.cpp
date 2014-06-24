@@ -14,7 +14,19 @@ struct CurrFrame {
 };
 
 CurrFrame curr_frames[NUM_KINECTS];
-pthread_mutex_t access_frame_mutex;
+pthread_mutex_t access_frame_mutexes[NUM_KINECTS];
+
+void lock(int kinectid)
+{
+	pthread_mutex_lock(&(access_frame_mutexes[kinectid]));
+	cout << ">>> mutex " << kinectid << " locked" << endl;
+}
+
+void unlock(int kinectid)
+{
+	pthread_mutex_unlock(&(access_frame_mutexes[kinectid]));
+	cout << "<<< mutex " << kinectid << " unlocked" << endl;
+}
 
 void *kinect_reader(void *threadid)
 {
@@ -28,11 +40,11 @@ void *kinect_reader(void *threadid)
 	   cout << "Thread n. " << tid << " will wait for " << waiting_time << " seconds (before getting the frame)" << endl;
 	   sleep(waiting_time);
 	   
+	   lock(tid);
 	   // got the frame
-	   pthread_mutex_lock(&access_frame_mutex);
 	   curr_frames[tid].processed = false;
 	   curr_frames[tid].frame_data = count; // FIXME: replace count with the actual data
-	   pthread_mutex_unlock(&access_frame_mutex);
+	   unlock(tid);
    }
 }
 
@@ -53,14 +65,14 @@ int poll_kinect_statuses()
 	cout << "checking kinect statuses.." << endl;
 	int i;
 	for (i = 0; i < NUM_KINECTS; i++) {
-    		pthread_mutex_lock(&access_frame_mutex);
+		lock(i);
 		if(curr_frames[i].processed == false) {
 			cout << "found frame not processed for kinect n." << i << endl;
 			int frame_data = get_frame(i);
-    			pthread_mutex_unlock(&access_frame_mutex);
+			unlock(i);
 			process_frame(i, frame_data);
 		} else {
-			pthread_mutex_unlock(&access_frame_mutex);
+			unlock(i);
 		}
 	}
 	cout << "ended checking kinect statuses" << endl;
@@ -69,10 +81,10 @@ int poll_kinect_statuses()
 int main(int argc, const char *argv[])
 {
     pthread_t threads[NUM_KINECTS];
-    pthread_mutex_init(&access_frame_mutex, NULL);
     int rc;
     int i;
     for (i = 0; i < NUM_KINECTS; i++) {
+    	pthread_mutex_init(&(access_frame_mutexes[i]), NULL);
     	curr_frames[i].processed = false;
     	curr_frames[i].frame_data = -2;
         cout << "main() : creating thread, " << i << endl;
