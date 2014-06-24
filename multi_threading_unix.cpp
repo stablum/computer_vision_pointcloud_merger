@@ -10,7 +10,7 @@ using namespace std;
 
 struct CurrFrame {
 	bool processed;
-	int payload;
+	int frame_data;
 };
 
 CurrFrame curr_frames[NUM_KINECTS];
@@ -31,14 +31,21 @@ void *kinect_reader(void *threadid)
 	   // got the frame
 	   pthread_mutex_lock(&access_frame_mutex);
 	   curr_frames[tid].processed = false;
-	   curr_frames[tid].payload = count;
+	   curr_frames[tid].frame_data = count; // FIXME: replace count with the actual data
 	   pthread_mutex_unlock(&access_frame_mutex);
    }
 }
 
-int process_frame(int kinectid) {
+int process_frame(int kinectid, int frame_data) {
+	cout << "processing frame " << kinectid << endl;
+}
+
+int get_frame(int kinectid) {
 	cout << "processing frame " << kinectid << endl;
 	curr_frames[kinectid].processed = true; // will skip (and not process) this frame next time
+	int ret = curr_frames[kinectid].frame_data;
+	curr_frames[kinectid].frame_data = 0; // empty it
+	return ret;
 }
 
 int poll_kinect_statuses()
@@ -46,9 +53,14 @@ int poll_kinect_statuses()
 	cout << "checking kinect statuses.." << endl;
 	int i;
 	for (i = 0; i < NUM_KINECTS; i++) {
+    		pthread_mutex_lock(&access_frame_mutex);
 		if(curr_frames[i].processed == false) {
 			cout << "found frame not processed for kinect n." << i << endl;
-			process_frame(i);
+			int frame_data = get_frame(i);
+    			pthread_mutex_unlock(&access_frame_mutex);
+			process_frame(i, frame_data);
+		} else {
+			pthread_mutex_unlock(&access_frame_mutex);
 		}
 	}
 	cout << "ended checking kinect statuses" << endl;
@@ -62,7 +74,7 @@ int main(int argc, const char *argv[])
     int i;
     for (i = 0; i < NUM_KINECTS; i++) {
     	curr_frames[i].processed = false;
-    	curr_frames[i].payload = -2;
+    	curr_frames[i].frame_data = -2;
         cout << "main() : creating thread, " << i << endl;
         rc = pthread_create(&threads[i], NULL, kinect_reader, (void *) i);
 		if (rc) {
@@ -73,9 +85,7 @@ int main(int argc, const char *argv[])
     
     while(true) {
     	sleep(1);
-    	pthread_mutex_lock(&access_frame_mutex);
     	poll_kinect_statuses();
-    	pthread_mutex_unlock(&access_frame_mutex);
     }
     
     pthread_exit(NULL);
