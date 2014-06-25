@@ -1,6 +1,9 @@
 #include <iostream>
+#include <pcl/console/parse.h>
+#include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/keypoints/iss_3d.h>
 #include "definitions.h"
 
 using namespace std;
@@ -15,8 +18,8 @@ detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud)
     double iss_non_max_radius_;
     double iss_gamma_21_(0.975);
     double iss_gamma_32_(0.975);
-    double iss_min_neighbors_(5);
-    int iss_threads_(4);
+    double iss_min_neighbors_(10);
+    int iss_threads_(8);
 
     pcl::PointCloud <
         POINT_TYPE >::Ptr ret(new pcl::PointCloud <
@@ -26,7 +29,7 @@ detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud)
 
 // Fill in the model cloud
 
-    double model_resolution;
+    double model_resolution = 0.001;
 
 // Compute model_resolution
 
