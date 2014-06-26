@@ -61,7 +61,39 @@ downsampling.o: downsampling.cpp definitions.h
 		-I/usr/include/ni/ \
 		-c
 
-reader: reader.o keypoints_detector.o viewer.o downsampling.o
+normals.o: normals.cpp definitions.h
+	c++ normals.cpp \
+		-I/usr/include/pcl-1.7/ \
+		-I/usr/include/vtk-5.8/ \
+		-I/usr/include/eigen3/ \
+		-I/usr/include/ni/ \
+		-c
+
+feature_descriptors.o: feature_descriptors.cpp definitions.h
+	c++ feature_descriptors.cpp \
+		-I/usr/include/pcl-1.7/ \
+		-I/usr/include/vtk-5.8/ \
+		-I/usr/include/eigen3/ \
+		-I/usr/include/ni/ \
+		-c
+
+correspondences.o: correspondences.cpp definitions.h
+	c++ correspondences.cpp \
+		-I/usr/include/pcl-1.7/ \
+		-I/usr/include/vtk-5.8/ \
+		-I/usr/include/eigen3/ \
+		-I/usr/include/ni/ \
+		-c
+
+ransac.o: ransac.cpp definitions.h
+	c++ ransac.cpp \
+		-I/usr/include/pcl-1.7/ \
+		-I/usr/include/vtk-5.8/ \
+		-I/usr/include/eigen3/ \
+		-I/usr/include/ni/ \
+		-c
+
+reader: reader.o keypoints_detector.o viewer.o downsampling.o normals.o feature_descriptors.o correspondences.o ransac.o
 	g++ $^ -o reader -L/usr/lib \
 		-lboost_system \
 		-lboost_thread \
@@ -77,10 +109,11 @@ reader: reader.o keypoints_detector.o viewer.o downsampling.o
 		-lpcl_search \
 		-lpcl_features \
 		-lpcl_filters \
+        -lpcl_sample_consensus \
 		-lQVTK \
 		-lvtkCharts \
 		-lvtkCommon \
 		-lvtkFiltering \
 		-lvtkGeovis \
-		-lvtkRendering
+		-lvtkRendering \
 		
