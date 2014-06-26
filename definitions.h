@@ -18,15 +18,19 @@
 
 #define NUM_KINECTS 2
 //define DOWNSAMPLE_LEAFSIZE 0.04f
-#define DOWNSAMPLE_LEAFSIZE 0.02f
+#define DOWNSAMPLE_LEAFSIZE 0.015f
 
 //define FPFH_RADIUS 0.05
-#define FPFH_RADIUS 0.50
+#define FPFH_RADIUS 0.75
 
-#define FLIPYZ true
+//define FLIPYZ true
 
-#define ISS_MIN_NEIGHBORS 5
+#define ISS_MIN_NEIGHBORS 8
 
+#define RECIPROCAL_CORRESPONDENCES true
+
+#define CRSAC_INLIER_TRESHOLD 0.75
+#define CRSAC_MAX_ITERATIONS 100000
 pcl::PointCloud < POINT_TYPE >::Ptr
 detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud);
 
@@ -80,4 +84,9 @@ show_normals (
 void print_feature_descriptor(
     pcl::FPFHSignature33 f
 );
+
+struct CorrespondencesStuff {
+    pcl::CorrespondencesPtr correspondences,
+    pcl::registration::CorrespondenceEstimation::Ptr < pcl::FPFHSignature33, pcl::FPFHSignature33 > est
+};
 

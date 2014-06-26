@@ -10,10 +10,14 @@ determine_inliers (
     pcl::CorrespondencesPtr ret(new pcl::Correspondences);
 
 	pcl::registration::CorrespondenceRejectorSampleConsensus<POINT_TYPE> crsac;
+    crsac.setInlierThreshold(CRSAC_INLIER_TRESHOLD);
 	crsac.setInputCloud(keypoints_input);
 	crsac.setTargetCloud(keypoints_target);
-	crsac.setMaxIterations(1000);
+	crsac.setMaxIterations(CRSAC_MAX_ITERATIONS);
 	crsac.setInputCorrespondences(all_correspondences);
 	crsac.getCorrespondences(*ret);
+    crsac.getRemainingCorrespondences(*all_correspondences, *ret);
+
+    std::cout << "crsac inlier treshold:" << crsac.getInlierThreshold () << std::endl;
     return ret;
 }

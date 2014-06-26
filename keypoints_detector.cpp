@@ -59,6 +59,5 @@ detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud)
     iss_detector.setNumberOfThreads(iss_threads_);
     iss_detector.setInputCloud(cloud);
     iss_detector.compute(*ret);
-
     return ret;
 }

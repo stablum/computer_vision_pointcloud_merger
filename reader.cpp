@@ -75,16 +75,16 @@ void load_and_process_instant(int frame_id)
         std::cout << "After downsampling: " << clouds[seq]->points.size()
             << " data points" << std::endl;
 
-        std::cout << "detecting keypoints...";
+        std::cout << "detecting keypoints..." << std::endl;
         keypoints_sets[seq] = detect_keypoints(clouds[seq]);
         std::cout << "done." << std::endl;
 
-        std::cout << "calculating feature descriptors...";
+        cout << "number of keypoints:" << keypoints_sets[seq]->points.size() << endl;
+
+        std::cout << "calculating feature descriptors..." << std::endl;
         features_sets[seq] = calculate_feature_descriptors(clouds[seq], normals, keypoints_sets[seq]);
         std::cout << "done." << std::endl;
 
-        cout << "number of keypoints:" << keypoints_sets[seq]->points.
-            size() << endl;
         //show_cloud(clouds[seq], keypoints_sets[seq]);
         /*
            for (size_t i = 0; i < cloud->points.size (); ++i)
@@ -94,18 +94,18 @@ void load_and_process_instant(int frame_id)
          */
     }
     
-    std::cout << "determining correspondences...";
+    std::cout << "determining correspondences..." << std::endl;
     pcl::CorrespondencesPtr all_correspondences
     	= determine_correspondences(features_sets[0],features_sets[1]);
     std::cout << "done." << std::endl;
     
    	cout << "No. of all correspondences: " <<  all_correspondences->size() << endl;
 
-    print_correspondences_indexes(all_correspondences);
+    //print_correspondences_indexes(all_correspondences);
 
-    print_correspondences_and_histograms(all_correspondences,features_sets[0],features_sets[1]);
+    //print_correspondences_and_histograms(all_correspondences,features_sets[0],features_sets[1]);
 
-    std::cout << "determining inliers...";
+    std::cout << "determining inliers..." << std::endl;
     pcl::CorrespondencesPtr inlier_correspondences
     	= determine_inliers(all_correspondences, keypoints_sets[0], keypoints_sets[1]);
     std::cout << "done." << std::endl;
