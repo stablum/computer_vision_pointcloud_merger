@@ -16,7 +16,7 @@ detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud)
 #endif
     double iss_gamma_21_(0.990);
     double iss_gamma_32_(0.990);
-    double iss_min_neighbors_(5);
+    double iss_min_neighbors_(ISS_MIN_NEIGHBORS);
     int iss_threads_(4);
 
     pcl::PointCloud <
@@ -60,9 +60,5 @@ detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud)
     iss_detector.setInputCloud(cloud);
     iss_detector.compute(*ret);
 
-    for (size_t i = 0; i < ret->points.size (); ++i) {
-        ret->points[i].z = - ret->points[i].z;
-        ret->points[i].y = - ret->points[i].y;
-    }
     return ret;
 }

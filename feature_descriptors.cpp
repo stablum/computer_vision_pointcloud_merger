@@ -1,5 +1,17 @@
 #include "definitions.h"
 
+void print_feature_descriptor (
+    pcl::FPFHSignature33 f
+)
+{
+    std::cout << "histogram ";
+    int j;
+    for(j = 0; j < 33; j++) {
+        std::cout << f.histogram[j] << "; ";
+    }
+    std::cout << std::endl;
+}
+
 pcl::PointCloud<pcl::FPFHSignature33>::Ptr calculate_feature_descriptors(
     pcl::PointCloud<POINT_TYPE>::Ptr cloud,
     pcl::PointCloud<pcl::Normal>::Ptr normals,
@@ -35,14 +47,19 @@ pcl::PointCloud<pcl::FPFHSignature33>::Ptr calculate_feature_descriptors(
 	// Use all neighbors in a sphere of radius 5cm
 	// IMPORTANT: the radius used here has to be larger than the radius used to estimate the surface normals!!!
 	printf("before set Radius\n");
-	fpfh.setRadiusSearch (0.05);
+	fpfh.setRadiusSearch (FPFH_RADIUS);
 
 	// Output datasets
 	pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfhs(new pcl::PointCloud<pcl::FPFHSignature33>());
 
+    //pcl::FPFHSignature33 tmp = fpfhs->points[0];
+    //int tmp_size = fpfhs->points.size();
+    //pcl::FPFHSignature33 tmp10 = fpfhs->points[10];
+    //pcl::FPFHSignature33 tmp20 = fpfhs->points[20];
+
 	// Compute the features
 	fpfh.compute(*fpfhs);
-
+    
 	return fpfhs;
 }
 

@@ -3,6 +3,7 @@
 pcl::PointCloud<pcl::Normal>::Ptr
 calculate_normals(pcl::PointCloud<POINT_TYPE>::Ptr cloud)
 {
+
 	// Create the normal estimation class, and pass the input dataset to it
 	pcl::NormalEstimation<POINT_TYPE, pcl::Normal> ne;
 	ne.setInputCloud (cloud);
@@ -20,6 +21,13 @@ calculate_normals(pcl::PointCloud<POINT_TYPE>::Ptr cloud)
 
 	// Compute the features
 	ne.compute (*cloud_normals);
+
+#if 0
+    for (size_t i = 0; i < cloud_normals->points.size (); ++i) {
+        cloud_normals->points[i].z = - cloud_normals->points[i].z;
+        cloud_normals->points[i].y = - cloud_normals->points[i].y;
+    }
+#endif
 
 	return cloud_normals;
 }

@@ -72,3 +72,22 @@ show_correspondences (
       viewer.spinOnce();
    }
  }
+
+void
+show_normals (
+        pcl::PointCloud<POINT_TYPE>::ConstPtr cloud,
+        pcl::PointCloud<pcl::Normal>::ConstPtr normals
+)
+{
+	// Visualization of keypoints along with the original cloud
+	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Normals Viewer"));
+	pcl::visualization::PointCloudColorHandlerRGBField<POINT_TYPE> cloud_color_handler(cloud);
+	viewer->setBackgroundColor( 0.1, 0.1, 0.1 );
+	viewer->addPointCloud(cloud, cloud_color_handler, "cloud");
+	viewer->addPointCloudNormals<POINT_TYPE, pcl::Normal>(cloud, normals, 10, 0.02, "normals");
+   while (!viewer->wasStopped ())
+   {
+      viewer->spinOnce();
+   }
+}
+
