@@ -2,6 +2,22 @@
 
 using namespace std;
 
+pcl::PointCloud < POINT_TYPE >::Ptr
+flipyz (
+    pcl::PointCloud < POINT_TYPE >::Ptr in
+) {
+    pcl::PointCloud < POINT_TYPE >::Ptr ret(new pcl::PointCloud < POINT_TYPE >);
+
+    pcl::copyPointCloud(*in, *ret);
+
+    for (size_t i = 0; i < ret->points.size (); ++i) {
+        ret->points[i].z = - ret->points[i].z;
+        ret->points[i].y = - ret->points[i].y;
+    }
+
+    return ret;
+}
+
 void
 show_cloud (
     pcl::PointCloud<POINT_TYPE>::Ptr cloud,
@@ -38,6 +54,8 @@ show_correspondences (
     pcl::CorrespondencesPtr correspondences
 )
  {
+   //keypoints1 = flipyz(keypoints1);
+   //keypoints2 = flipyz(keypoints2);
 
    //... populate cloud
    pcl::visualization::PCLVisualizer viewer ("3D Viewer for correspondences");
@@ -57,7 +75,9 @@ show_correspondences (
    viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "keypoints2");
 
    viewer.addPointCloud<POINT_TYPE> (cloud1, cloud1_color_handler, "cloud1");
+   viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud1");
    viewer.addPointCloud<POINT_TYPE> (cloud2, cloud2_color_handler, "cloud2");
+   viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud2");
 
     for (size_t i = 0; i < correspondences->size(); i++) {
 		const POINT_TYPE &p_src = keypoints2->points[(*correspondences)[i].index_query];

@@ -1,20 +1,25 @@
 #include "definitions.h"
 
+extern float filter_z_treshold;
+extern float iss_min_neighbors;
+extern float iss_model_resolution;
+extern float iss_gamma;
+
 pcl::PointCloud < POINT_TYPE >::Ptr
-select_keypoints (
-    pcl::PointCloud < POINT_TYPE >::Ptr keypoints
+filter_z (
+    pcl::PointCloud < POINT_TYPE >::Ptr in
 )
 {
     pcl::PointCloud < POINT_TYPE >::Ptr ret (new pcl::PointCloud <POINT_TYPE>); 
     ret->clear(); // just to be sure
 
-    for(int i = 0; i < keypoints->points.size(); i++) {
-        double z = keypoints->points[i].z;
-        if(abs(z) < FILTER_Z_TRESHOLD) {
-            ret->push_back(keypoints->points[i]);
-            std::cout << "point kept" << i << "" << z << endl;
+    for(int i = 0; i < in->points.size(); i++) {
+        double z = in->points[i].z;
+        if(abs(z) < filter_z_treshold && !isnan(z)) {
+            ret->push_back(in->points[i]);
+            // std::cout << "point kept " << i << " " << z << endl;
         } else {
-            std::cout << "removed" << i << " " << z << endl;
+            // std::cout << "removed " << i << " " << z << endl;
         }
     }
     return ret;
@@ -34,9 +39,9 @@ detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud)
     double iss_normal_radius_;
     double iss_border_radius_;
 #endif
-    double iss_gamma_21_(0.990);
-    double iss_gamma_32_(0.990);
-    double iss_min_neighbors_(ISS_MIN_NEIGHBORS);
+    double iss_gamma_21_(iss_gamma);
+    double iss_gamma_32_(iss_gamma);
+    double iss_min_neighbors_(iss_min_neighbors);
     int iss_threads_(4);
 
     pcl::PointCloud <
@@ -47,7 +52,7 @@ detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud)
 
 // Fill in the model cloud
 
-    double model_resolution = 0.01;
+    double model_resolution = iss_model_resolution;
 
 // Compute model_resolution
 
@@ -79,6 +84,6 @@ detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud)
     iss_detector.setNumberOfThreads(iss_threads_);
     iss_detector.setInputCloud(cloud);
     iss_detector.compute(*ret);
-    ret = select_keypoints(ret);
+    ret = filter_z(ret);
     return ret;
 }

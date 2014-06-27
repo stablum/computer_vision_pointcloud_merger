@@ -1,5 +1,7 @@
 #include "definitions.h"
 
+extern float crsac_inlier_treshold;
+
 Eigen::Matrix4f
 determine_inliers (
     pcl::CorrespondencesPtr inliers,
@@ -10,7 +12,7 @@ determine_inliers (
 {
 
 	pcl::registration::CorrespondenceRejectorSampleConsensus<POINT_TYPE> crsac;
-    crsac.setInlierThreshold(CRSAC_INLIER_TRESHOLD);
+    crsac.setInlierThreshold(crsac_inlier_treshold);
 	crsac.setInputCloud(keypoints_input);
 	crsac.setTargetCloud(keypoints_target);
 	crsac.setMaxIterations(CRSAC_MAX_ITERATIONS);

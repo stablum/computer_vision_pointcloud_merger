@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>     // std::string, std::stof
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
@@ -11,6 +12,7 @@
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
 #include <pcl/registration/icp.h>
+#include <math.h>
 
 #define BORDER_ESTIMATION 1
 
@@ -20,21 +22,21 @@
 
 #define NUM_KINECTS 2
 //define DOWNSAMPLE_LEAFSIZE 0.04f
-#define DOWNSAMPLE_LEAFSIZE 0.015f
+//define DOWNSAMPLE_LEAFSIZE 0.015f NOT USED ANYMORE: argv[2]
 
 //define FPFH_RADIUS 0.05
 #define FPFH_RADIUS 0.75
 
 //define FLIPYZ true
 
-#define ISS_MIN_NEIGHBORS 8
+//define ISS_MIN_NEIGHBORS 8 NOT USED ANYMORE: argv[4]
 
 #define RECIPROCAL_CORRESPONDENCES true
 
-#define CRSAC_INLIER_TRESHOLD 0.75
+//define CRSAC_INLIER_TRESHOLD 0.75 NOT USED ANYMORE: argv[5]
 #define CRSAC_MAX_ITERATIONS 100000
 
-#define FILTER_Z_TRESHOLD 3.0
+//efine FILTER_Z_TRESHOLD 2.0 NOT USED ANYMORE: argv[1]
 
 pcl::PointCloud < POINT_TYPE >::Ptr
 detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud);
@@ -95,5 +97,10 @@ void
 show_merged (
     pcl::PointCloud<POINT_TYPE>::Ptr cloud1,
     pcl::PointCloud<POINT_TYPE>::Ptr cloud2
+);
+
+pcl::PointCloud < POINT_TYPE >::Ptr
+filter_z (
+    pcl::PointCloud < POINT_TYPE >::Ptr in
 );
 

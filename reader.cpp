@@ -2,6 +2,14 @@
 
 using namespace std;
 
+float filter_z_treshold;
+float downsample_leafsize;
+char * directory_prefix;
+float iss_min_neighbors;
+float crsac_inlier_treshold;
+float iss_model_resolution;
+float iss_gamma;
+
 void
 print_correspondences_and_histograms(
     pcl::CorrespondencesPtr correspondences,
@@ -32,13 +40,15 @@ pcl::PointCloud < POINT_TYPE >::Ptr read_cloud(int sequence_nr,
     pcl::PointCloud < POINT_TYPE >::Ptr cloud(new pcl::PointCloud <
                                               POINT_TYPE >);
     // IMPORTANT: the following + 1 is because the folders are named from 1 and not from 0
-    sprintf(filename, "sequence3-%d/%03d.pcd", sequence_nr + 1, frame_id);
+    sprintf(filename, "%s%d/%03d.pcd", directory_prefix, sequence_nr + 1, frame_id);
     cout << "the filename is: " << filename << endl;
     if (pcl::io::loadPCDFile < POINT_TYPE > (filename, *cloud) == -1)   //* load the file
     {
         cout << "Couldn't read file " << filename << endl;
         exit(-1);
     }
+    
+    cloud = filter_z(cloud);
 
 #ifdef FLIPYZ
     for (size_t i = 0; i < cloud->points.size (); ++i) {
@@ -67,7 +77,7 @@ void load_and_process_instant(int frame_id)
             << " data points from point cloud, seq="
             << seq << " frame_id=" << frame_id << std::endl;
     
-        clouds[seq] = downsample(clouds[seq], DOWNSAMPLE_LEAFSIZE);
+        clouds[seq] = downsample(clouds[seq], downsample_leafsize);
 
         normals = calculate_normals(clouds[seq]);
         //show_normals(clouds[seq],normals);
@@ -111,8 +121,18 @@ void load_and_process_instant(int frame_id)
 
     Eigen::Matrix4f transformation
     	= determine_inliers(inlier_correspondences, all_correspondences, keypoints_sets[0], keypoints_sets[1]);
-    std::cout << "done." << std::endl;
-   	cout << "No. of inlier correspondences: " <<  inlier_correspondences->size() << endl;
+  std::cout << "done." << std::endl;
+  cout << "No. of inlier correspondences: " <<  inlier_correspondences->size() << endl;
+
+  std::cout << "transformation matrix:" << endl;
+    int i;
+    for(i = 0; i < 4; i++) {
+        int j;
+        for(j = 0; j < 4; j++) {
+            std::cout << transformation(i,j) << " ";
+        }
+        std::cout << endl;
+    }
     
     show_correspondences(clouds[0], clouds[1], keypoints_sets[0], keypoints_sets[1], all_correspondences);
     show_correspondences(clouds[0], clouds[1], keypoints_sets[0], keypoints_sets[1], inlier_correspondences);
@@ -131,6 +151,14 @@ int main(int argc, char **argv)
 {
 
     int frame_id;
+    filter_z_treshold = atof(argv[1]);
+    downsample_leafsize = atof(argv[2]);
+    directory_prefix = argv[3];
+    iss_min_neighbors = atof(argv[4]);
+    crsac_inlier_treshold = atof(argv[5]);
+    iss_model_resolution = atof(argv[6]);
+    iss_gamma = atof(argv[7]);
+
     for (frame_id = 0; frame_id <= 99; frame_id++) {
         load_and_process_instant(frame_id);
     }
