@@ -1,4 +1,4 @@
-CXXFLAGS=-g -O0 -Wno-deprecated -w
+CXXFLAGS=-g -O0 -Wno-deprecated -w -Wfatal-errors
 
 all: reader
 
@@ -95,7 +95,15 @@ ransac.o: ransac.cpp definitions.h
 		-I/usr/include/ni/ \
 		-c
 
-reader: reader.o keypoints_detector.o viewer.o downsampling.o normals.o feature_descriptors.o correspondences.o ransac.o
+icp.o: icp.cpp definitions.h
+	c++ $(CXXFLAGS) icp.cpp \
+		-I/usr/include/pcl-1.7/ \
+		-I/usr/include/vtk-5.8/ \
+		-I/usr/include/eigen3/ \
+		-I/usr/include/ni/ \
+		-c
+
+reader: reader.o keypoints_detector.o viewer.o downsampling.o normals.o feature_descriptors.o correspondences.o ransac.o icp.o
 	g++ $(CXXFLAGS) $^ -o reader -L/usr/lib \
 		-lboost_system \
 		-lboost_thread \

@@ -1,5 +1,25 @@
 #include "definitions.h"
 
+pcl::PointCloud < POINT_TYPE >::Ptr
+select_keypoints (
+    pcl::PointCloud < POINT_TYPE >::Ptr keypoints
+)
+{
+    pcl::PointCloud < POINT_TYPE >::Ptr ret (new pcl::PointCloud <POINT_TYPE>); 
+    ret->clear(); // just to be sure
+
+    for(int i = 0; i < keypoints->points.size(); i++) {
+        double z = keypoints->points[i].z;
+        if(abs(z) < FILTER_Z_TRESHOLD) {
+            ret->push_back(keypoints->points[i]);
+            std::cout << "point kept" << i << "" << z << endl;
+        } else {
+            std::cout << "removed" << i << " " << z << endl;
+        }
+    }
+    return ret;
+}
+
 using namespace std;
 pcl::PointCloud < POINT_TYPE >::Ptr
 detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud)
@@ -59,5 +79,6 @@ detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud)
     iss_detector.setNumberOfThreads(iss_threads_);
     iss_detector.setInputCloud(cloud);
     iss_detector.compute(*ret);
+    ret = select_keypoints(ret);
     return ret;
 }

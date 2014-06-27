@@ -7,8 +7,10 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/features/fpfh.h>
+#include <pcl/common/transforms.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
+#include <pcl/registration/icp.h>
 
 #define BORDER_ESTIMATION 1
 
@@ -31,6 +33,9 @@
 
 #define CRSAC_INLIER_TRESHOLD 0.75
 #define CRSAC_MAX_ITERATIONS 100000
+
+#define FILTER_Z_TRESHOLD 3.0
+
 pcl::PointCloud < POINT_TYPE >::Ptr
 detect_keypoints(pcl::PointCloud < POINT_TYPE >::Ptr cloud);
 
@@ -54,8 +59,9 @@ determine_correspondences(
     pcl::PointCloud < pcl::FPFHSignature33 >::Ptr fpfhs2
 );
 
-pcl::CorrespondencesPtr
-determine_inliers ( 
+Eigen::Matrix4f
+determine_inliers (
+    pcl::CorrespondencesPtr inliers,
     pcl::CorrespondencesPtr all_correspondences,
     pcl::PointCloud < POINT_TYPE >::Ptr keypoints_input,
     pcl::PointCloud < POINT_TYPE >::Ptr keypoints_target
@@ -85,8 +91,9 @@ void print_feature_descriptor(
     pcl::FPFHSignature33 f
 );
 
-struct CorrespondencesStuff {
-    pcl::CorrespondencesPtr correspondences,
-    pcl::registration::CorrespondenceEstimation::Ptr < pcl::FPFHSignature33, pcl::FPFHSignature33 > est
-};
+void
+show_merged (
+    pcl::PointCloud<POINT_TYPE>::Ptr cloud1,
+    pcl::PointCloud<POINT_TYPE>::Ptr cloud2
+);
 

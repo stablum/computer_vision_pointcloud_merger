@@ -91,3 +91,25 @@ show_normals (
    }
 }
 
+void
+show_merged (
+    pcl::PointCloud<POINT_TYPE>::Ptr cloud1,
+    pcl::PointCloud<POINT_TYPE>::Ptr cloud2
+)
+ {
+   //... populate cloud
+   pcl::visualization::PCLVisualizer viewer ("3D Viewer");
+
+   viewer.setBackgroundColor(0.5, 0.5, 0.5);
+
+   pcl::visualization::PointCloudColorHandlerRGBField<POINT_TYPE> cloud_color_handler1(cloud1);
+   pcl::visualization::PointCloudColorHandlerRGBField<POINT_TYPE> cloud_color_handler2(cloud2);
+
+   viewer.addPointCloud<POINT_TYPE> (cloud1, cloud_color_handler1, "cloud1");
+   viewer.addPointCloud<POINT_TYPE> (cloud2, cloud_color_handler2, "cloud2");
+
+   while (!viewer.wasStopped ())
+   {
+      viewer.spinOnce();
+   }
+ }

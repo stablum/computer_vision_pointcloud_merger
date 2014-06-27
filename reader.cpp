@@ -32,7 +32,7 @@ pcl::PointCloud < POINT_TYPE >::Ptr read_cloud(int sequence_nr,
     pcl::PointCloud < POINT_TYPE >::Ptr cloud(new pcl::PointCloud <
                                               POINT_TYPE >);
     // IMPORTANT: the following + 1 is because the folders are named from 1 and not from 0
-    sprintf(filename, "sequence%d/%03d.pcd", sequence_nr + 1, frame_id);
+    sprintf(filename, "sequence3-%d/%03d.pcd", sequence_nr + 1, frame_id);
     cout << "the filename is: " << filename << endl;
     if (pcl::io::loadPCDFile < POINT_TYPE > (filename, *cloud) == -1)   //* load the file
     {
@@ -101,20 +101,30 @@ void load_and_process_instant(int frame_id)
     
    	cout << "No. of all correspondences: " <<  all_correspondences->size() << endl;
 
+
     //print_correspondences_indexes(all_correspondences);
 
     //print_correspondences_and_histograms(all_correspondences,features_sets[0],features_sets[1]);
 
     std::cout << "determining inliers..." << std::endl;
-    pcl::CorrespondencesPtr inlier_correspondences
-    	= determine_inliers(all_correspondences, keypoints_sets[0], keypoints_sets[1]);
+    pcl::CorrespondencesPtr inlier_correspondences(new pcl::Correspondences);
+
+    Eigen::Matrix4f transformation
+    	= determine_inliers(inlier_correspondences, all_correspondences, keypoints_sets[0], keypoints_sets[1]);
     std::cout << "done." << std::endl;
-    	
    	cout << "No. of inlier correspondences: " <<  inlier_correspondences->size() << endl;
     
     show_correspondences(clouds[0], clouds[1], keypoints_sets[0], keypoints_sets[1], all_correspondences);
     show_correspondences(clouds[0], clouds[1], keypoints_sets[0], keypoints_sets[1], inlier_correspondences);
 
+    std::cout << "applying transformation from RANSAC..." << endl;
+    
+    pcl::PointCloud < POINT_TYPE >::Ptr cloud0_transformed(new pcl::PointCloud < POINT_TYPE >);
+
+	pcl::transformPointCloud(*clouds[0],*cloud0_transformed,transformation);
+    std::cout << "done :)" << endl;
+    
+    show_merged(cloud0_transformed, clouds[1]);
 }
 
 int main(int argc, char **argv)
